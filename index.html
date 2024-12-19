@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .category {
+            margin-bottom: 20px;
+        }
+        .category h2 {
+            background-color: #555;
+            color: #fff;
+            padding: 10px;
+        }
+        .post {
+            border: 1px solid #ddd;
+            background-color: #fff;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .post h3 {
+            margin: 0;
+        }
+        .post-actions {
+            margin-top: 10px;
+        }
+        .comment {
+            margin-left: 20px;
+            padding: 5px;
+            border-left: 2px solid #ddd;
+        }
+        .form {
+            margin-top: 20px;
+        }
+        .form input, .form textarea, .form button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Community Platform</h1>
+    </header>
+    <div class="container">
+        <div class="category" id="categoryList">
+            <!-- Categories will be dynamically loaded here -->
+        </div>
+        <div class="form" id="addCategoryForm">
+            <h2>Add Category</h2>
+            <input type="text" id="categoryName" placeholder="Category Name">
+            <button onclick="addCategory()">Add Category</button>
+        </div>
+    </div>
+
+    <script>
+        let categories = [];
+
+        function renderCategories() {
+            const categoryList = document.getElementById('categoryList');
+            categoryList.innerHTML = '';
+            categories.forEach((category, index) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.classList.add('category');
+
+                const categoryHeader = document.createElement('h2');
+                categoryHeader.textContent = category.name;
+                categoryDiv.appendChild(categoryHeader);
+
+                category.posts.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.classList.add('post');
+
+                    const postTitle = document.createElement('h3');
+                    postTitle.textContent = post.title;
+                    postDiv.appendChild(postTitle);
+
+                    const postContent = document.createElement('p');
+                    postContent.textContent = post.content;
+                    postDiv.appendChild(postContent);
+
+                    const postActions = document.createElement('div');
+                    postActions.classList.add('post-actions');
+
+                    const likeButton = document.createElement('button');
+                    likeButton.textContent = `Like (${post.likes})`;
+                    likeButton.onclick = () => {
+                        post.likes++;
+                        renderCategories();
+                    };
+                    postActions.appendChild(likeButton);
+
+                    const dislikeButton = document.createElement('button');
+                    dislikeButton.textContent = `Dislike (${post.dislikes})`;
+                    dislikeButton.onclick = () => {
+                        post.dislikes++;
+                        renderCategories();
+                    };
+                    postActions.appendChild(dislikeButton);
+
+                    postDiv.appendChild(postActions);
+                    categoryDiv.appendChild(postDiv);
+                });
+
+                const addPostForm = document.createElement('div');
+                addPostForm.classList.add('form');
+
+                const postTitleInput = document.createElement('input');
+                postTitleInput.placeholder = 'Post Title';
+                addPostForm.appendChild(postTitleInput);
+
+                const postContentInput = document.createElement('textarea');
+                postContentInput.placeholder = 'Post Content';
+                addPostForm.appendChild(postContentInput);
+
+                const addPostButton = document.createElement('button');
+                addPostButton.textContent = 'Add Post';
+                addPostButton.onclick = () => {
+                    category.posts.push({
+                        title: postTitleInput.value,
+                        content: postContentInput.value,
+                        likes: 0,
+                        dislikes: 0
+                    });
+                    renderCategories();
+                };
+                addPostForm.appendChild(addPostButton);
+
+                categoryDiv.appendChild(addPostForm);
+                categoryList.appendChild(categoryDiv);
+            });
+        }
+
+        function addCategory() {
+            const categoryName = document.getElementById('categoryName').value;
+            if (categoryName.trim() !== '') {
+                categories.push({ name: categoryName, posts: [] });
+                document.getElementById('categoryName').value = '';
+                renderCategories();
+            }
+        }
+
+        renderCategories();
+    </script>
+</body>
+</html>
